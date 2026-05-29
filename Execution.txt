@@ -1,5 +1,0 @@
-# Execution flow
-1. Build model
-2. Testing model with its validation scores
-3. Implementing simple pipeline for the early detection and expert validation pipeline
-4. Making simple recommendation engine for detected thing via web crawl or DB based simple mechanism tailooired to farmer based on feild information

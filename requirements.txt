@@ -1,0 +1,9 @@
+tensorflow[and-cuda]
+opencv-python
+numpy
+pandas
+matplotlib
+pillow
+scikit-learn
+rich
+typer

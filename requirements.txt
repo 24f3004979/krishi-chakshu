@@ -7,3 +7,5 @@ pillow
 scikit-learn
 rich
 typer
+flask
+werkzeug

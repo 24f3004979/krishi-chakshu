@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krishi Chakshu - Plant Disease Detection</title>
+    <title>Krishi Chakshu</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%2310b981%22 opacity=%220.2%22/><path d=%22M50 20C50 20 20 45 20 65C20 75 30 80 50 80C70 80 80 75 80 65C80 45 50 20 50 20Z%22 fill=%22%2310b981%22/></svg>">
     <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #ef4444;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,339 +24,342 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo-svg {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-container {
             width: 100%;
-            padding: 40px;
+            max-width: 480px;
+            padding: 0 1.5rem;
+            animation: fadeInUp 0.8s ease-out;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .upload-area {
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            padding: 30px;
+        .upload-zone {
+            position: relative;
+            background: var(--surface);
+            border: 2px dashed #334155;
+            border-radius: 24px;
+            padding: 4rem 2rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            background: #f8f9ff;
+            transition: var(--transition);
         }
 
-        .upload-area:hover {
-            border-color: #764ba2;
-            background: #f0f2ff;
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: #1e293b;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
         }
 
-        .upload-area.drag-over {
-            border-color: #764ba2;
-            background: #e8ebff;
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+            transform: scale(1.02);
         }
 
         .upload-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0.8;
         }
 
         .upload-text {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 5px;
+            color: var(--text-dim);
+            font-size: 1rem;
+            font-weight: 500;
         }
 
-        .upload-hint {
-            color: #999;
-            font-size: 12px;
-        }
+        #fileInput { display: none; }
 
-        input[type="file"] {
+        .preview-box {
             display: none;
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 400px;
+            object-fit: cover;
         }
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 1.2rem;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
+            transition: var(--transition);
+            margin-top: 1.5rem;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 10px 15px -3px var(--primary-glow);
         }
 
         .btn-primary:hover {
+            filter: brightness(1.1);
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 20px 25px -5px var(--primary-glow);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-decoration: underline;
         }
 
-        .preview {
-            margin-bottom: 20px;
+        .result-box {
             display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 24px;
+            border-left: 4px solid var(--primary);
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .preview img {
-            width: 100%;
-            max-height: 300px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+        .result-box.error { border-color: var(--danger); }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
         }
 
-        .result {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .result.success {
-            background: #f0fdf4;
-            border-left: 4px solid #22c55e;
-        }
-
-        .result.error {
-            background: #fef2f2;
-            border-left: 4px solid #ef4444;
-        }
-
-        .result-label {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .result.success .result-label {
-            color: #22c55e;
-        }
-
-        .result.error .result-label {
-            color: #ef4444;
-        }
-
-        .result-message {
-            color: #555;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .confidence-bar {
-            width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
+        .confidence-meter {
+            margin-top: 1.5rem;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
             overflow: hidden;
-            margin-top: 10px;
         }
 
         .confidence-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
             width: 0;
-            transition: width 0.3s ease;
+            transition: width 1s ease-out;
         }
 
-        .loading {
+        .loader {
             display: none;
+            margin-top: 2rem;
             text-align: center;
-            padding: 20px;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e5e7eb;
-            border-top: 4px solid #667eea;
+            width: 32px;
+            height: 32px;
+            border: 3px solid #334155;
+            border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 1rem;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #999;
-            font-size: 12px;
+            position: fixed;
+            bottom: 2rem;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🌱 Krishi Chakshu</h1>
-            <p>Plant Disease Detection</p>
+    <div class="logo-container">
+        <svg class="logo-svg" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#10b981" fill-opacity="0.1"/>
+            <path d="M50 25C50 25 30 45 30 60C30 71 39 80 50 80C61 80 70 71 70 60C70 45 50 25 50 25Z" fill="#10b981"/>
+            <path d="M50 80V25" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1>Krishi Chakshu</h1>
+    </div>
+
+    <div class="app-container">
+        <div id="dropZone" class="upload-zone">
+            <span class="upload-icon">✦</span>
+            <div class="upload-text">Drop plant image or click</div>
+            <input type="file" id="fileInput" accept="image/jpeg,image/png">
         </div>
 
-        <form id="uploadForm">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📸</div>
-                <div class="upload-text">Click or drag plant image here</div>
-                <div class="upload-hint">JPG or PNG, Max 16MB</div>
-                <input type="file" id="fileInput" accept="image/jpeg,image/png" />
-            </div>
+        <div id="previewBox" class="preview-box">
+            <img id="previewImg" alt="Preview">
+            <button class="btn btn-primary" id="analyzeBtn">Analyze Health</button>
+            <button class="btn btn-ghost" id="cancelBtn">Choose another</button>
+        </div>
 
-            <div class="preview" id="preview">
-                <img id="previewImg" alt="Preview" />
-            </div>
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            <p style="color: var(--text-dim)">Processing leaf data...</p>
+        </div>
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p style="margin-top: 10px; color: #666;">Analyzing...</p>
-            </div>
-
-            <button type="button" class="btn btn-primary" id="uploadBtn" style="display: none;">Upload & Predict</button>
-        </form>
-
-        <div class="result" id="result"></div>
-
-        <div class="footer">
-            <p>Made with ❤️ for farmers</p>
+        <div id="resultBox" class="result-box">
+            <!-- Results injected here -->
         </div>
     </div>
 
+    <div class="footer">v1.0 • Minimal Mode</div>
+
     <script>
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const preview = document.getElementById('preview');
+        const zone = document.getElementById('dropZone');
+        const input = document.getElementById('fileInput');
+        const previewBox = document.getElementById('previewBox');
         const previewImg = document.getElementById('previewImg');
-        const result = document.getElementById('result');
-        const loading = document.getElementById('loading');
+        const resultBox = document.getElementById('resultBox');
+        const loader = document.getElementById('loader');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+        let selectedFile = null;
 
-        uploadArea.addEventListener('dragover', (e) => {
+        zone.onclick = () => input.click();
+
+        zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('drag-over'); };
+        zone.ondragleave = () => zone.classList.remove('drag-over');
+        zone.ondrop = (e) => {
             e.preventDefault();
-            uploadArea.classList.add('drag-over');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                handleFileSelect();
+            zone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) {
+                selectedFile = e.dataTransfer.files[0];
+                handleFiles(e.dataTransfer.files);
             }
-        });
+        };
 
-        fileInput.addEventListener('change', handleFileSelect);
+        input.onchange = () => {
+            if (input.files.length > 0) {
+                selectedFile = input.files[0];
+                handleFiles(input.files);
+            }
+        };
 
-        function handleFileSelect() {
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
-                preview.style.display = 'block';
-                uploadBtn.style.display = 'block';
-                result.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImg.src = e.target.result;
+                    zone.style.display = 'none';
+                    previewBox.style.display = 'block';
+                    resultBox.style.display = 'none';
+                };
+                reader.readAsDataURL(files[0]);
+            }
         }
 
-        uploadBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const file = fileInput.files[0];
-            if (!file) return;
+        cancelBtn.onclick = () => {
+            input.value = '';
+            selectedFile = null;
+            zone.style.display = 'block';
+            previewBox.style.display = 'none';
+            resultBox.style.display = 'none';
+        };
+
+        analyzeBtn.onclick = async () => {
+            if (!selectedFile) return;
 
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append('file', selectedFile);
 
-            loading.style.display = 'block';
-            uploadBtn.disabled = true;
+            previewBox.style.display = 'none';
+            loader.style.display = 'block';
 
             try {
-                const response = await fetch('/predict', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-                loading.style.display = 'none';
-                uploadBtn.disabled = false;
-
-                displayResult(data);
-            } catch (error) {
-                loading.style.display = 'none';
-                uploadBtn.disabled = false;
-                displayResult({
-                    status: 'error',
-                    message: 'Network error. Please try again.'
-                });
+                const res = await fetch('/predict', { method: 'POST', body: formData });
+                const data = await res.json();
+                showResult(data);
+            } catch (err) {
+                showResult({ status: 'error', message: 'Connection failed' });
+            } finally {
+                loader.style.display = 'none';
             }
-        });
+        };
 
-        function displayResult(data) {
+        function showResult(data) {
+            resultBox.style.display = 'block';
             if (data.status === 'error') {
-                result.className = 'result error';
-                result.innerHTML = `
-                    <div class="result-label">⚠️ Error</div>
-                    <div class="result-message">${data.message}</div>
-                `;
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = `<div class="status-badge">✕ Error</div><p style="color:var(--text-dim)">${data.message}</p>
+                <button class="btn btn-primary" onclick="cancelBtn.click()" style="margin-top:1rem">Try Again</button>`;
             } else {
-                const isHealthy = !data.is_ill;
-                const icon = isHealthy ? '✅' : '⚠️';
-                result.className = `result ${isHealthy ? 'success' : 'error'}`;
-                const confidence = (data.confidence * 100).toFixed(1);
-                result.innerHTML = `
-                    <div class="result-label">${icon} ${data.label}</div>
-                    <div class="result-message">${data.message}</div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" style="width: ${confidence}%;"></div>
+                const healthy = !data.is_ill;
+                const conf = (data.confidence * 100).toFixed(0);
+                resultBox.className = 'result-box';
+                resultBox.style.borderLeftColor = healthy ? 'var(--primary)' : 'var(--danger)';
+                resultBox.innerHTML = `
+                    <div class="status-badge" style="color: ${healthy ? 'var(--primary)' : 'var(--danger)'}">
+                        ${healthy ? '✦ Healthy' : '✧ Issue Found'}
                     </div>
-                    <div style="text-align: center; margin-top: 8px; color: #666; font-size: 12px;">
-                        Confidence: ${confidence}%
+                    <p style="color: var(--text-dim); margin-bottom: 1rem;">${data.message}</p>
+                    <div style="font-size: 0.8rem; font-weight: 600; display:flex; justify-content:space-between">
+                        <span>Confidence</span><span>${conf}%</span>
                     </div>
+                    <div class="confidence-meter">
+                        <div class="confidence-fill" style="width:${conf}%; background:${healthy ? 'var(--primary)' : 'var(--danger)'}"></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="cancelBtn.click()" style="margin-top:2rem">Scan New Leaf</button>
                 `;
             }
-            result.style.display = 'block';
         }
     </script>
 </body>
